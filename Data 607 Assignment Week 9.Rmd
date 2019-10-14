@@ -1,0 +1,115 @@
+---
+title: "Data 607 Assignment Week 9"
+author: "Ajay Arora"
+date: "October 12, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+##NYTimes APIKey = hvHeqqlTzIhjv5GtM0M4WQo5isCzHQ1l
+##NYTimes AppId = 3c15af75-0c16-4bbd-8517-d5654e6f93df 
+
+##Example call: https://api.nytimes.com/svc/search/v2/articlesearch.json 
+
+##Referecen: https://datascienceplus.com/accessing-web-data-json-in-r-using-httr/
+
+```{r}
+#install.packages(c("httr", "jsonlite", "lubridate"))
+```
+
+
+```{r}
+library(httr)
+#This package exposes some additional functions to convert json/text to data frame
+library(jsonlite)
+#This library is used to manipulate data
+library(dplyr)
+library(kableExtra)
+
+```
+
+```{r}
+apiKey = "hvHeqqlTzIhjv5GtM0M4WQo5isCzHQ1l"
+url  <- "http://api.nytimes.com/svc/search/v2/articlesearch.json"
+
+result <- GET(url, query=list(q="climate","api-key"=apiKey))
+result
+
+
+
+```
+
+```{r}
+#For debugging to see if we have data
+#content(result, 'text')
+#Was there an error in retrieval of data
+#http_type(result)
+
+nytdata <- content(result, as = "parsed") 
+#nytdata
+
+modJson <- nytdata$response$docs #. Access data element of whole list and ignore other vectors
+#modJson
+#What is the type
+#class(modJson)
+
+#Convert to an array
+arr <- array(modJson)
+#arr
+
+#Get number of items in list
+iterations <- length(modJson)
+#For debugging iterations
+
+#Establish matrix to construct our data frame 
+m <- matrix(ncol = 11, nrow = iterations)
+
+row <- 1
+
+#Construct matrix and populate with list items 
+for(i in 1:iterations){
+  for ( j in arr[i]) { 
+    if(j$web_url != "")
+      m[row, 1] <- (j$`web_url`)
+    if(j$snippet != "")
+      m[row, 2] <- j$snippet
+    if(j$lead_paragraph != "")
+      m[row, 3] <- j$lead_paragraph
+    if(j$abstract != "")
+      m[row, 4] <- j$abstract
+    if(j$source != "")
+      m[row, 5] <- j$source
+    if(!is.null(j$headline[1]$main))
+      m[row, 6] <- j$headline[1]$main
+
+    if(!is.null(j$pub_date))
+      m[row, 7] <- j$pub_date
+
+    if(!is.null(j$document_type))
+      m[row, 8] <- j$document_type
+    
+    if(!is.null(j$news_desk))
+      m[row, 9]  <- j$news_desk
+    
+    if(!is.null(j$word_count))
+      m[row, 10] <- j$word_count
+    
+    if(!is.null(j$type_of_material))
+      m[row, 11] <- j$type_of_material
+    row <- row + 1
+    
+  }
+}
+#m
+
+z3 <- data.frame(m)
+x <- c('web_url','snippet','lead_paragraph','abstract', 'source', 'main', 'pub_date', 'document_type', 'news_desk', 'word_count', 'type_of_material')
+colnames(z3) <- x
+z3 %>% kable() %>%  kable_styling()
+
+```
