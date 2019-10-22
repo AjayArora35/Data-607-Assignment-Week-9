@@ -8,4 +8,4 @@
 # 1. Run the Python program
 # 2. Navigate to http://localhost:5000 
 # 3. Enter search criteria
-# 4. See results in the resuls web page
+# 4. See results in the results web page
