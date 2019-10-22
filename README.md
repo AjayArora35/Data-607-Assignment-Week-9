@@ -5,7 +5,7 @@
 # dataset.html ==> shows the results from search criteria
 # search.html  ==> display a webpage where a user can enter search criteria
 # Please place all 3 files in the same folder.  
-# 1. Run the Python program
+# 1. Run the Python program (Data 607 Assignment Week 9.py)
 # 2. Navigate to http://localhost:5000 
 # 3. Enter search criteria
 # 4. See results in the results web page
